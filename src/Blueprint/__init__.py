@@ -1,1 +1,5 @@
 """Blueprint."""
+
+
+class Table:
+    pass

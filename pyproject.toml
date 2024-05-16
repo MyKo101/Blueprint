@@ -1,25 +1,23 @@
 [tool.poetry]
 name = "Blueprint"
 version = "0.0.0"
-description = "Blueprint"
+description = "Module for generating arbitrary datasets"
 authors = ["Michael Barrowman <myko101ab@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/MyKo101/Blueprint"
 repository = "https://github.com/MyKo101/Blueprint"
 documentation = "https://Blueprint.readthedocs.io"
-classifiers = [
-    "Development Status :: 1 - Planning",
-]
+classifiers = ["Development Status :: 1 - Planning"]
+packages = [{ include = "Blueprint", from = "src" }]
 
 [tool.poetry.urls]
 Changelog = "https://github.com/MyKo101/Blueprint/releases"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = ">=8.0.1"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"
 black = ">=21.10b0"
 coverage = {extras = ["toml"], version = ">=6.2"}
@@ -40,13 +38,11 @@ pyupgrade = ">=2.29.1"
 safety = ">=1.10.3"
 sphinx = ">=4.3.2"
 sphinx-autobuild = ">=2021.3.14"
-sphinx-click = ">=3.0.2"
 typeguard = ">=2.13.3"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}
+nox-poetry = "^1.0.3"
 
-[tool.poetry.scripts]
-Blueprint = "Blueprint.__main__:main"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
@@ -58,7 +54,15 @@ source = ["Blueprint", "tests"]
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 100
+skip_empty = true
+fail_under = 0
+exclude_also = [
+    "import",
+    "__all__",
+    "@(abc\\.)?abstractmethod",
+    "if TYPE_CHECKING:",
+]
+
 
 [tool.isort]
 profile = "black"
