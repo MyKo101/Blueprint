@@ -1,0 +1,16 @@
+{
+  "_checkout": "2022.6.3",
+  "_output_dir": "C:\\Users\\MichaelBarrowman\\Documents\\Projects\\Scratchpad",
+  "_repo_dir": "C:\\Users\\MichaelBarrowman\\.cookiecutters\\cookiecutter-hypermodern-python",
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Michael Barrowman",
+  "copyright_year": "2024",
+  "development_status": "Development Status :: 1 - Planning",
+  "email": "myko101ab@gmail.com",
+  "friendly_name": "Blueprint",
+  "github_user": "MyKo101",
+  "license": "MIT",
+  "package_name": "Blueprint",
+  "project_name": "Blueprint",
+  "version": "0.0.0"
+}
