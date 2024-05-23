@@ -5,20 +5,28 @@ from __future__ import annotations
 from abc import ABC
 from abc import abstractmethod
 from dataclasses import dataclass
+
+# from typing import Self
 from typing import Generic
+from typing import Self
 from typing import TypeVar
 
 
 # region TypeVars used by generics
 
 T = TypeVar("T", bool, str, float, int)
+U = TypeVar("U", bool, str, float, int)
 T_SFI = TypeVar("T_SFI", str, float, int)
+T_BFI = TypeVar("T_BFI", bool, float, int)
 T_FI = TypeVar("T_FI", float, int)
+T_BI = TypeVar("T_BI", bool, int)
+T_BF = TypeVar("T_BF", bool, float)
 T_F = TypeVar("T_F", float, float)
 T_B = TypeVar("T_B", bool, bool)
+T_I = TypeVar("T_I", int, int)
 # endregion
 
-# region Generic Classes
+# region Generic Abstract Classes
 
 
 @dataclass
@@ -27,8 +35,36 @@ class Generator(Generic[T], ABC):
 
     @abstractmethod
     def generate(self, n: int) -> list[T]:
-        """Generate n values."""
+        """Generate n values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         ...
+
+    @abstractmethod
+    def copy(self) -> Self:
+        """Create a copy of the Generator."""
+        ...
+
+    def to_int(self) -> GeneratorInt:
+        """Convert the Generator to a Generator of integers."""
+        return GeneratorWrapperInt(self)
+
+    def to_float(self) -> GeneratorFloat:
+        """Convert the Generator to a Generator of floats."""
+        return GeneratorWrapperFloat(self)
+
+    def to_str(self) -> GeneratorStr:
+        """Convert the Generator to a Generator of strings."""
+        return GeneratorWrapperStr(self)
+
+    def to_bool(self) -> GeneratorBool:
+        """Convert the Generator to a Generator of booleans."""
+        return GeneratorWrapperBool(self)
 
 
 @dataclass
@@ -40,7 +76,14 @@ class GeneratorComposite(Generator[T], ABC):
 
     @abstractmethod
     def generate(self, n: int) -> list[T]:
-        """Generate n values."""
+        """Generate n values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         ...
 
     def zip_generators(self, n: int) -> zip[tuple[T, T]]:
@@ -50,8 +93,52 @@ class GeneratorComposite(Generator[T], ABC):
 
         return zip(lhs_values, rhs_values, strict=True)
 
+    def copy(self) -> Self:
+        """Create a copy of the GeneratorComposite."""
+        return self.__class__(self.left.copy(), self.right.copy())
+
+
+@dataclass
+class GeneratorWrapper(Generator[T], Generic[U, T], ABC):
+    """A Wrapper class for converting Generators."""
+
+    internal: Generator[U]
+
+    def copy(self) -> Self:
+        """Create a copy of the GeneratorWrapper."""
+        return self.__class__(self.internal.copy())
+
+    @staticmethod
+    def convert(x: U, t: type[T]) -> T:
+        """Convert the internal value to the response type.
+
+        Args:
+            x: The value to convert.
+            t: The type to convert to.
+
+        Returns:
+            T: The converted value.
+        """
+        try:
+            return t(x)
+        except ValueError:
+            return t()
+
+    def wrapper_generate(self, n: int, t: type[T]) -> list[T]:
+        """Generate n values by converting the generated values to floats.
+
+        Args:
+            n: The number of values to generate.
+            t: The type to convert to.
+
+        Returns:
+            list[str]: The generated values.
+        """
+        return [GeneratorWrapper.convert(x, t) for x in self.internal.generate(n)]
+
 
 # endregion
+
 
 # region Abstract Typed Base Classes
 
@@ -60,20 +147,105 @@ class GeneratorComposite(Generator[T], ABC):
 class GeneratorBool(Generator[bool], ABC):
     """Abstract Base Class for Generators that generate booleans."""
 
+    def to_bool(self) -> GeneratorBool:
+        """Convert the Generator to a Generator of booleans."""
+        return self.copy()
+
 
 @dataclass
 class GeneratorStr(Generator[str], ABC):
     """Abstract Base Class for Generators that generate strings."""
+
+    def to_str(self) -> GeneratorStr:
+        """Convert the Generator to a Generator of strings."""
+        return self.copy()
 
 
 @dataclass
 class GeneratorFloat(Generator[float], ABC):
     """Abstract Base Class for Generators that generate floats."""
 
+    def to_float(self) -> GeneratorFloat:
+        """Convert the Generator to a Generator of floats."""
+        return self.copy()
+
 
 @dataclass
 class GeneratorInt(Generator[int], ABC):
     """Abstract Base Class for Generators that generate integers."""
+
+    def to_int(self) -> GeneratorInt:
+        """Convert the Generator to a Generator of integers."""
+        return self.copy()
+
+
+# endregion
+
+# region Wrapper Classes
+
+
+@dataclass
+class GeneratorWrapperStr(GeneratorStr, GeneratorWrapper[U, str]):
+    """A Wrapper class for converting Generators to string Generators."""
+
+    def generate(self, n: int) -> list[str]:
+        """Generate n values by converting the generated values to strings.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
+        return self.wrapper_generate(n, str)
+
+
+@dataclass
+class GeneratorWrapperFloat(GeneratorFloat, GeneratorWrapper[U, float]):
+    """A Wrapper class for converting Generators to float Generators."""
+
+    def generate(self, n: int) -> list[float]:
+        """Generate n values by converting the generated values to floats.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
+        return self.wrapper_generate(n, float)
+
+
+@dataclass
+class GeneratorWrapperInt(GeneratorInt, GeneratorWrapper[U, int]):
+    """A Wrapper class for converting Generators to integer Generators."""
+
+    def generate(self, n: int) -> list[int]:
+        """Generate n values by converting the generated values to integers.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
+        return self.wrapper_generate(n, int)
+
+
+@dataclass
+class GeneratorWrapperBool(GeneratorBool, GeneratorWrapper[U, bool]):
+    """A Wrapper class for converting Generators to boolean Generators."""
+
+    def generate(self, n: int) -> list[bool]:
+        """Generate n values by converting the generated values to booleans.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
+        return self.wrapper_generate(n, bool)
 
 
 # endregion
@@ -82,83 +254,146 @@ class GeneratorInt(Generator[int], ABC):
 
 
 @dataclass
-class GeneratorCompositeAdd(GeneratorComposite[T_SFI], ABC):
+class GeneratorCompositeAdd(GeneratorComposite[T_SFI]):
     """A Composite Generator that adds two Generators."""
 
     def generate(self, n: int) -> list[T_SFI]:
-        """Generate n values by adding the two generated values."""
+        """Generate n values by adding the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a + b for a, b in self.zip_generators(n)]
 
 
 @dataclass
-class GeneratorCompositeSub(GeneratorComposite[T_FI], ABC):
+class GeneratorCompositeSub(GeneratorComposite[T_FI]):
     """A Composite Generator that subtracts two Generators."""
 
     def generate(self, n: int) -> list[T_FI]:
-        """Generate n values by subtracting the two generated values."""
+        """Generate n values by subtracting the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a - b for a, b in self.zip_generators(n)]
 
 
 @dataclass
-class GeneratorCompositeMult(GeneratorComposite[T_FI], ABC):
+class GeneratorCompositeMult(GeneratorComposite[T_FI]):
     """A Composite Generator that multiplies two Generators."""
 
     def generate(self, n: int) -> list[T_FI]:
-        """Generate n values by multiplying the two generated values."""
+        """Generate n values by multiplying the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a * b for a, b in self.zip_generators(n)]
 
 
 @dataclass
-class GeneratorCompositeTrueDiv(GeneratorComposite[T_F], ABC):
+class GeneratorCompositeTrueDiv(GeneratorComposite[T_F]):
     """A Composite Generator that divides two Generators."""
 
     def generate(self, n: int) -> list[T_F]:
-        """Generate n values by dividing the two generated values."""
+        """Generate n values by dividing the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a / b for a, b in self.zip_generators(n)]
 
 
 @dataclass
-class GeneratorCompositeFloorDiv(GeneratorComposite[T_FI], ABC):
+class GeneratorCompositeFloorDiv(GeneratorComposite[T_FI]):
     """A Composite Generator that floor divides two Generators."""
 
     def generate(self, n: int) -> list[T_FI]:
-        """Generate n values by floor dividing the two generated values."""
+        """Generate n values by floor dividing the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a // b for a, b in self.zip_generators(n)]
 
 
 @dataclass
-class GeneratorCompositePow(GeneratorComposite[T_FI], ABC):
+class GeneratorCompositePow(GeneratorComposite[T_FI]):
     """A Composite Generator that exponentiates two Generators."""
 
     def generate(self, n: int) -> list[T_FI]:
-        """Generate n values by exponentiating the two generated values."""
+        """Generate n values by exponentiating the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a**b for a, b in self.zip_generators(n)]
 
 
 @dataclass
-class GeneratorCompositeAnd(GeneratorComposite[T_B], ABC):
+class GeneratorCompositeAnd(GeneratorComposite[T_B]):
     """A Composite Generator that ands two Generators."""
 
     def generate(self, n: int) -> list[T_B]:
-        """Generate n values by anding the two generated values."""
+        """Generate n values by anding the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a and b for a, b in self.zip_generators(n)]
 
 
 @dataclass
-class GeneratorCompositeOr(GeneratorComposite[T_B], ABC):
+class GeneratorCompositeOr(GeneratorComposite[T_B]):
     """A Composite Generator that ors two Generators."""
 
     def generate(self, n: int) -> list[T_B]:
-        """Generate n values by oring the two generated values."""
+        """Generate n values by oring the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a or b for a, b in self.zip_generators(n)]
 
 
 @dataclass
-class GeneratorCompositeXor(GeneratorComposite[T_B], ABC):
+class GeneratorCompositeXor(GeneratorComposite[T_B]):
     """A Composite Generator that xors two Generators."""
 
     def generate(self, n: int) -> list[T_B]:
-        """Generate n values by xoring the two generated values."""
+        """Generate n values by xoring the two generated values.
+
+        Args:
+            n: The number of values to generate.
+
+        Returns:
+            list[str]: The generated values.
+        """
         return [a ^ b for a, b in self.zip_generators(n)]
 
 
@@ -166,7 +401,7 @@ class GeneratorCompositeXor(GeneratorComposite[T_B], ABC):
 
 # region Composite Classes
 
-# region Compite Classes for Addition
+# region Composite Classes for Addition
 
 
 @dataclass
@@ -185,7 +420,7 @@ class GeneratorCompositeAddInt(GeneratorCompositeAdd[int], GeneratorInt):
 
 
 # endregion
-# region Compite Classes for Subtraction
+# region Composite Classes for Subtraction
 
 
 @dataclass

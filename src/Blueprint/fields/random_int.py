@@ -1,5 +1,7 @@
 """RandomInt field generator."""
 
+from __future__ import annotations
+
 import random
 from dataclasses import dataclass
 
@@ -35,3 +37,7 @@ class RandomInt(GeneratorInt):
     def generate(self, n: int) -> list[int]:
         """Generate n random integers between low and high."""
         return [generate_int(self.low, self.high) for _ in range(n)]
+
+    def copy(self) -> RandomInt:
+        """Return a copy of the RandomInt object."""
+        return RandomInt(self.low, self.high)
