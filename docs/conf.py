@@ -1,4 +1,5 @@
 """Sphinx configuration."""
+
 project = "Blueprint"
 author = "Michael Barrowman"
 copyright = "2024, Michael Barrowman"

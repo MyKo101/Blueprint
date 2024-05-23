@@ -1,5 +1,7 @@
 """Blueprint."""
 
+from .fields import Generator
+from .fields import RandomInt
 
-class Table:
-    pass
+
+__all__ = ["Generator", "RandomInt"]
