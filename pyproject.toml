@@ -15,7 +15,8 @@ packages = [{ include = "Blueprint", from = "src" }]
 Changelog = "https://github.com/MyKo101/Blueprint/releases"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
+typing_extensions = "^4.0.1"
 
 [tool.poetry.group.dev.dependencies]
 Pygments = ">=2.10.0"

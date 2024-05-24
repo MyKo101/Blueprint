@@ -25,6 +25,7 @@ repos:
         name: darglint
         entry: darglint
         language: system
+        args: [-e DAR104]
         types: [python]
         stages: [manual]
       - id: end-of-file-fixer
