@@ -214,6 +214,28 @@ class GeneratorWrapper(Generator[T], Generic[U, T], ABC):
         return [GeneratorWrapper.convert(x, t) for x in self.internal.generate(n)]
 
 
+@dataclass
+class GeneratorConstant(Generator[T]):
+    """A Generator that generates a constant value.
+
+    Args:
+        value (T): The constant value to generate.
+    """
+
+    value: T
+
+    def generate(self, n: int) -> list[T]:
+        """Generate n values.
+
+        Args:
+            n (int): The number of values to generate.
+
+        Returns:
+            list[T]: The generated values.
+        """
+        return [self.value for _ in range(n)]
+
+
 # endregion
 
 # region Abstract Typed Base Classes
@@ -662,17 +684,17 @@ class GeneratorCompositeXor(GeneratorComposite[T_B]):
 
 
 @dataclass
-class GeneratorCompositeAddStr(GeneratorCompositeAdd[str], GeneratorStr):
+class GeneratorCompositeAddStr(GeneratorStr, GeneratorCompositeAdd[str]):
     """A Composite Generator that adds two String Generators."""
 
 
 @dataclass
-class GeneratorCompositeAddFloat(GeneratorCompositeAdd[float], GeneratorFloat):
+class GeneratorCompositeAddFloat(GeneratorFloat, GeneratorCompositeAdd[float]):
     """A Composite Generator that adds two Float Generators."""
 
 
 @dataclass
-class GeneratorCompositeAddInt(GeneratorCompositeAdd[int], GeneratorInt):
+class GeneratorCompositeAddInt(GeneratorInt, GeneratorCompositeAdd[int]):
     """A Composite Generator that adds two Integer Generators."""
 
 
@@ -681,12 +703,12 @@ class GeneratorCompositeAddInt(GeneratorCompositeAdd[int], GeneratorInt):
 
 
 @dataclass
-class GeneratorCompositeSubFloat(GeneratorCompositeSub[float], GeneratorFloat):
+class GeneratorCompositeSubFloat(GeneratorFloat, GeneratorCompositeSub[float]):
     """A Composite Generator that subtracts two Float Generators."""
 
 
 @dataclass
-class GeneratorCompositeSubInt(GeneratorCompositeSub[int], GeneratorInt):
+class GeneratorCompositeSubInt(GeneratorInt, GeneratorCompositeSub[int]):
     """A Composite Generator that subtracts two Integer Generators."""
 
 
@@ -695,12 +717,12 @@ class GeneratorCompositeSubInt(GeneratorCompositeSub[int], GeneratorInt):
 
 
 @dataclass
-class GeneratorCompositeMultFloat(GeneratorCompositeMult[float], GeneratorFloat):
+class GeneratorCompositeMultFloat(GeneratorFloat, GeneratorCompositeMult[float]):
     """A Composite Generator that multiplies two Float Generators."""
 
 
 @dataclass
-class GeneratorCompositeMultInt(GeneratorCompositeMult[int], GeneratorInt):
+class GeneratorCompositeMultInt(GeneratorInt, GeneratorCompositeMult[int]):
     """A Composite Generator that multiplies two Integer Generators."""
 
 
@@ -709,7 +731,7 @@ class GeneratorCompositeMultInt(GeneratorCompositeMult[int], GeneratorInt):
 
 
 @dataclass
-class GeneratorCompositeTrueDivFloat(GeneratorCompositeTrueDiv[float], GeneratorFloat):
+class GeneratorCompositeTrueDivFloat(GeneratorFloat, GeneratorCompositeTrueDiv[float]):
     """A Composite Generator that divides two Float Generators."""
 
 
@@ -725,7 +747,7 @@ class GeneratorCompositeFloorDivFloat(
 
 
 @dataclass
-class GeneratorCompositeFloorDivInt(GeneratorCompositeFloorDiv[int], GeneratorInt):
+class GeneratorCompositeFloorDivInt(GeneratorInt, GeneratorCompositeFloorDiv[int]):
     """A Composite Generator that floor divides two Integer Generators."""
 
 
@@ -734,12 +756,12 @@ class GeneratorCompositeFloorDivInt(GeneratorCompositeFloorDiv[int], GeneratorIn
 
 
 @dataclass
-class GeneratorCompositePowFloat(GeneratorCompositePow[float], GeneratorFloat):
+class GeneratorCompositePowFloat(GeneratorFloat, GeneratorCompositePow[float]):
     """A Composite Generator that exponentiates two Float Generators."""
 
 
 @dataclass
-class GeneratorCompositePowInt(GeneratorCompositePow[int], GeneratorInt):
+class GeneratorCompositePowInt(GeneratorInt, GeneratorCompositePow[int]):
     """A Composite Generator that exponentiates two Integer Generators."""
 
 
@@ -748,7 +770,7 @@ class GeneratorCompositePowInt(GeneratorCompositePow[int], GeneratorInt):
 
 
 @dataclass
-class GeneratorCompositeAndBool(GeneratorCompositeAnd[bool], GeneratorBool):
+class GeneratorCompositeAndBool(GeneratorBool, GeneratorCompositeAnd[bool]):
     """A Composite Generator that ands two Boolean Generators."""
 
 
@@ -757,7 +779,7 @@ class GeneratorCompositeAndBool(GeneratorCompositeAnd[bool], GeneratorBool):
 
 
 @dataclass
-class GeneratorCompositeOrBool(GeneratorCompositeOr[bool], GeneratorBool):
+class GeneratorCompositeOrBool(GeneratorBool, GeneratorCompositeOr[bool]):
     """A Composite Generator that ors two Boolean Generators."""
 
 
@@ -766,10 +788,35 @@ class GeneratorCompositeOrBool(GeneratorCompositeOr[bool], GeneratorBool):
 
 
 @dataclass
-class GeneratorCompositeXorBool(GeneratorCompositeXor[bool], GeneratorBool):
+class GeneratorCompositeXorBool(GeneratorBool, GeneratorCompositeXor[bool]):
     """A Composite Generator that xors two Boolean Generators."""
 
 
 # endregion
+
+# endregion
+
+# region Constant Generators
+
+
+@dataclass
+class ConstantStr(GeneratorStr, GeneratorConstant[str]):
+    """A Generator that generates a constant string value."""
+
+
+@dataclass
+class ConstantBool(GeneratorBool, GeneratorConstant[bool]):
+    """A Generator that generates a constant boolean value."""
+
+
+@dataclass
+class ConstantInt(GeneratorInt, GeneratorConstant[int]):
+    """A Generator that generates a constant integer value."""
+
+
+@dataclass
+class ConstantFloat(GeneratorFloat, GeneratorConstant[float]):
+    """A Generator that generates a constant float value."""
+
 
 # endregion

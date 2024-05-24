@@ -10,18 +10,12 @@ from .generators import GeneratorFloat
 from .generators import GeneratorInt
 
 
-# class RandomInt(FieldGenerator[int]):
-
-#     def generate(self, n: int) -> list[int]:
-#         return [random.randint(0, 100) for _ in range(n)]
-
-
 def generate_int(low: int, high: int) -> int:
     """Generate a random integer between low and high.
 
     Args:
-        low: The lower bound of the random integer.
-        high: The upper bound of the random integer.
+        low (int): The lower bound of the random integer.
+        high (int): The upper bound of the random integer.
 
     Returns:
         int: A random integer between low and high.
@@ -33,8 +27,8 @@ def generate_float(low: float, high: float) -> float:
     """Generate a random float between low and high.
 
     Args:
-        low: The lower bound of the random float.
-        high: The upper bound of the random float.
+        low (float): The lower bound of the random float.
+        high (float): The upper bound of the random float.
 
     Returns:
         float: A random float between low and high.
@@ -42,16 +36,16 @@ def generate_float(low: float, high: float) -> float:
     return random.uniform(low, high)  # noqa: S311
 
 
-def generate_bool(p: float) -> bool:
+def generate_bool(probability: float) -> bool:
     """Generate a random boolean with probability p.
 
     Args:
-        p: The probability of the random boolean being True.
+        probability (float): The probability of the random boolean being True.
 
     Returns:
         bool: A random boolean with probability p.
     """
-    return random.random() < p  # noqa: S311
+    return random.random() < probability  # noqa: S311
 
 
 @dataclass
