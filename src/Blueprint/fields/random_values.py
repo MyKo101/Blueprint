@@ -1,4 +1,5 @@
 """Random Value Generators."""
+
 from __future__ import annotations
 
 import random
@@ -34,7 +35,7 @@ def random_bool(probability: float) -> bool:
     """Generate a random boolean with probability p.
 
     Args:
-        probability (float): 
+        probability (float):
             The probability of the random boolean being True.
 
     Returns:

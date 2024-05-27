@@ -1,3 +1,5 @@
+"""Zipper class."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -18,6 +20,18 @@ class Zipper(Generic[T]):
     length: int = 0
 
     def __init__(self, *args: Iterable[T] | T, length: int | None = None) -> None:
+        """Initialize the Zipper object.
+
+        Args:
+            args (Iterable[T] | T): The lists to zip together.
+            length (int | None): The length of the lists.
+
+        Raises:
+            ValueError: If length is less than 1.
+            ValueError: If length does not match the length of the provided lists.
+            ValueError: If the provided lists are not all the same length.
+
+        """
         arg_lengths = [len(a) for a in args if isinstance(a, list)]
         if length is not None and length < 1:
             raise ValueError("Parameter length must be greater than 0.")
@@ -38,10 +52,19 @@ class Zipper(Generic[T]):
         self.data = args
 
     def __iter__(self) -> Zipper[T]:
+        """Return the Zipper object to iterate."""
         self.loc = 0
         return self
 
     def __next__(self) -> tuple[T, ...]:
+        """Return the next tuple of values.
+
+        Raises:
+            StopIteration: If the Zipper object has been exhausted.
+
+        Returns:
+            tuple[T, ...]: The next tuple of values.
+        """
         if self.loc >= self.length:
             raise StopIteration
         out = tuple(d[self.loc] if isinstance(d, list) else d for d in self.data)
