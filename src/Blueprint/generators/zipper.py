@@ -23,7 +23,8 @@ class Zipper(Generic[T]):
             raise ValueError("Parameter length must be greater than 0.")
         if length is not None and any(a != length for a in arg_lengths):
             raise ValueError(
-                "Parameter length must match the length of provided lists.")
+                "Parameter length must match the length of provided lists."
+            )
         # either length is None, or len(args) == length for all args
 
         arg_lengths_set = set(arg_lengths)
@@ -43,8 +44,6 @@ class Zipper(Generic[T]):
     def __next__(self) -> tuple[T, ...]:
         if self.loc >= self.length:
             raise StopIteration
-        out = tuple(
-            d[self.loc] if isinstance(d, list) else d
-            for d in self.data)
+        out = tuple(d[self.loc] if isinstance(d, list) else d for d in self.data)
         self.loc += 1
         return out

@@ -5,7 +5,7 @@ from typing import ClassVar
 from typing import Union
 
 # from ..fields.generators import Generator
-from ..fields.generators import GeneratorAny
+from ..generators import GeneratorAny
 from .metaclass import TableMeta
 
 
