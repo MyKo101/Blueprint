@@ -4,10 +4,18 @@ from __future__ import annotations
 
 import random
 from dataclasses import dataclass
+from typing import TypeVar
 
+from .generators import Generator
 from .generators import GeneratorBool
 from .generators import GeneratorFloat
 from .generators import GeneratorInt
+from .reference_types import ReferenceFloat
+from .reference_types import ReferenceInt
+from .zipper import Zipper
+
+
+T = TypeVar("T", int, float, bool, str)
 
 
 def generate_int(low: int, high: int) -> int:
@@ -48,16 +56,27 @@ def generate_bool(probability: float) -> bool:
     return random.random() < probability  # noqa: S311
 
 
+def actualise(obj: T | Generator[T], n: int) -> T | list[T]:
+    """Return the actual value of the object."""
+    if isinstance(obj, Generator):
+        return obj.generate(n)
+    return obj
+
+
 @dataclass
 class RandomInt(GeneratorInt):
     """A Generator that generates random integers."""
 
-    low: int
-    high: int
+    low: ReferenceInt
+    high: ReferenceInt
 
     def generate(self, n: int) -> list[int]:
         """Generate n random integers between low and high."""
-        return [generate_int(self.low, self.high) for _ in range(n)]
+        low_z = actualise(self.low, n)
+        high_z = actualise(self.high, n)
+        return [
+            generate_int(low, high) for low, high in Zipper(low_z, high_z, length=n)
+        ]
 
     def copy(self) -> RandomInt:
         """Return a copy of the RandomInt object."""
@@ -68,12 +87,16 @@ class RandomInt(GeneratorInt):
 class RandomFloat(GeneratorFloat):
     """A Generator that generates random floats."""
 
-    low: int
-    high: int
+    low: ReferenceFloat
+    high: ReferenceFloat
 
     def generate(self, n: int) -> list[float]:
         """Generate n random integers between low and high."""
-        return [generate_float(self.low, self.high) for _ in range(n)]
+        low_z = actualise(self.low, n)
+        high_z = actualise(self.high, n)
+        return [
+            generate_float(low, high) for low, high in Zipper(low_z, high_z, length=n)
+        ]
 
     def copy(self) -> RandomFloat:
         """Return a copy of the RandomFloat object."""
@@ -84,11 +107,12 @@ class RandomFloat(GeneratorFloat):
 class RandomBool(GeneratorBool):
     """A Generator that generates random booleans."""
 
-    probability: float
+    probability: ReferenceFloat
 
     def generate(self, n: int) -> list[bool]:
         """Generate n random integers between low and high."""
-        return [generate_bool(self.probability) for _ in range(n)]
+        probability = actualise(self.probability, n)
+        return [generate_bool(prob) for (prob,) in Zipper(probability, length=n)]
 
     def copy(self) -> RandomBool:
         """Return a copy of the RandomBool object."""
