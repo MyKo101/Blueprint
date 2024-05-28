@@ -10,7 +10,7 @@ from ..generators import GeneratorFloat
 from ..generators import GeneratorInt
 from ..generators import ReferenceFloat
 from ..generators import ReferenceInt
-from ..generators import Zipper
+from ..generators import zipper
 from .random_values import random_bool
 from .random_values import random_float
 from .random_values import random_int
@@ -31,7 +31,7 @@ class RandomInt(GeneratorInt):
         """Generate n random integers between low and high."""
         low_z = resolve(self.low, n)
         high_z = resolve(self.high, n)
-        return [random_int(low, high) for low, high in Zipper(low_z, high_z, length=n)]
+        return [random_int(low, high) for low, high in zipper(low_z, high_z, length=n)]
 
     def copy(self) -> RandomInt:
         """Return a copy of the RandomInt object."""
@@ -50,7 +50,7 @@ class RandomFloat(GeneratorFloat):
         low_z = resolve(self.low, n)
         high_z = resolve(self.high, n)
         return [
-            random_float(low, high) for low, high in Zipper(low_z, high_z, length=n)
+            random_float(low, high) for low, high in zipper(low_z, high_z, length=n)
         ]
 
     def copy(self) -> RandomFloat:
@@ -67,7 +67,7 @@ class RandomBool(GeneratorBool):
     def generate(self, n: int) -> list[bool]:
         """Generate n random integers between low and high."""
         probability = resolve(self.probability, n)
-        return [random_bool(prob) for prob, in Zipper(probability, length=n)]
+        return [random_bool(prob) for prob, in zipper(probability, length=n)]
 
     def copy(self) -> RandomBool:
         """Return a copy of the RandomBool object."""

@@ -10,7 +10,7 @@ from .reference_types import ReferenceFloat
 from .reference_types import ReferenceInt
 from .reference_types import ReferenceNumeric
 from .reference_types import ReferenceStr
-from .zipper import Zipper
+from .zipper_function import zipper
 
 
 __all__ = [
@@ -24,5 +24,5 @@ __all__ = [
     "ReferenceBool",
     "ReferenceNumeric",
     "ReferenceStr",
-    "Zipper",
+    "zipper",
 ]

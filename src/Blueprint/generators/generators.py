@@ -14,7 +14,7 @@ from typing import Union
 
 from typing_extensions import Self
 
-from .zipper import Zipper
+from .zipper_function import zipper
 
 
 # region TypeVars used by generics
@@ -157,7 +157,7 @@ class GeneratorComposite(Generator[T], ABC):
         """
         return [self.op(a, b) for a, b in self.zip_generators(n, from_cache=True)]
 
-    def zip_generators(self, n: int, *, from_cache: bool = False) -> Zipper[T]:
+    def zip_generators(self, n: int, *, from_cache: bool = False) -> zip[tuple[T, ...]]:
         """Zip the two generators together for iteration.
 
         Args:
@@ -165,7 +165,7 @@ class GeneratorComposite(Generator[T], ABC):
             from_cache (bool): Whether to generate from cache.
 
         Returns:
-            Zipper[T]: The zipped values.
+            zip[tuple[T, ...]]: The zipped values.
         """
         lhs_values: list[T]
         rhs_values: list[T]
@@ -175,7 +175,7 @@ class GeneratorComposite(Generator[T], ABC):
         else:
             lhs_values = self.left.generate(n)
             rhs_values = self.right.generate(n)
-        return Zipper(lhs_values, rhs_values)
+        return zipper(lhs_values, rhs_values)
 
     def copy(self) -> Self:
         """Create a copy of the GeneratorComposite.
