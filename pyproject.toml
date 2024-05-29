@@ -65,6 +65,8 @@ exclude_also = [
     "if TYPE_CHECKING:",
 ]
 
+[tool.coverage.html]
+show_contexts = true
 
 [tool.isort]
 profile = "black"

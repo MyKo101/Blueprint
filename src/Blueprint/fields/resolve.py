@@ -20,5 +20,5 @@ def resolve(obj: Union[T, Generator[T]], n: int) -> Union[T, list[T]]:
         T | list[T]: The resolved value of the object.
     """
     if isinstance(obj, Generator):
-        return obj.generate(n)
+        return obj.generate_cache(n)
     return obj

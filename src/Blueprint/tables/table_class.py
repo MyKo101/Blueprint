@@ -24,4 +24,4 @@ class Table(metaclass=TableMeta):
     @classmethod
     def generate(cls, n: int) -> dict[str, return_field]:
         """Generate n random records."""
-        return {field: cls.fields[field].generate(n) for field in cls.fields}
+        return {field: cls.fields[field].generate_cache(n) for field in cls.fields}

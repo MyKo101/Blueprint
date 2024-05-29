@@ -1,8 +1,10 @@
 """This module contains the fields that can be used in the blueprint."""
 
+from .generator_convertor import to_generator
 from .generators import Generator
 from .generators import GeneratorAny
 from .generators import GeneratorBool
+from .generators import GeneratorConstant
 from .generators import GeneratorFloat
 from .generators import GeneratorInt
 from .reference_types import ReferenceBool
@@ -19,6 +21,8 @@ __all__ = [
     "GeneratorBool",
     "GeneratorFloat",
     "GeneratorAny",
+    "GeneratorConstant",
+    "to_generator",
     "ReferenceInt",
     "ReferenceFloat",
     "ReferenceBool",

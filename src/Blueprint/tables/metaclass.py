@@ -5,6 +5,9 @@ from __future__ import annotations
 from typing import Any
 from typing import Callable
 
+from ..generators import Generator
+from ..generators import to_generator
+
 
 def is_function(value: Any) -> bool:
     """Check if the value is callable.
@@ -37,7 +40,7 @@ def is_field(key: str, value: Any) -> bool:
 
 def demote_conditional(
     dct: dict[str, Any], key: str, predicate: Callable[[str, Any], bool]
-) -> None:
+) -> dict[str, Any]:
     """Demote items in a dictionary based on a predicate.
 
     Args:
@@ -58,47 +61,26 @@ def demote_conditional(
     for k in demoted.keys():
         del dct[k]
 
-    if key not in dct.keys():
-        dct[key] = {}
-    dct[key].update(demoted)
+    if key in dct.keys():
+        demoted.update(dct[key])
 
-    return None
+    dct[key] = demoted
+
+    return demoted
 
 
 class TableMeta(type):
     """Metaclass for table classes."""
 
-    @staticmethod
-    def demote_fields(dct: dict[str, Any]) -> dict[str, Any]:
-        """Extract fields from the class dictionary."""
-        fields: dict[str, Any] = {}
-        for k, v in dct.items():
-            if not is_field(k, v):
-                continue
-            fields[k] = v
-
-        for k in fields.keys():
-            del dct[k]
-
-        if "fields" not in dct.keys():
-            dct["fields"] = {}
-        dct["fields"].update(fields)
-
-        return dct
-
     def __new__(
         cls, name: str, bases: tuple[type, ...], dct: dict[str, Any]  # noqa:B902
     ) -> TableMeta:
         """Create a new table class."""
-        # print(f"Creating class {name}")
-        # print(f"{cls=}")
-        # print(f"{bases=}")
-        # print("dct:")
-        # for k, v in dct.items():
-        # print(f"  {k} = {v}")
-        demote_conditional(dct, "fields", is_field)
-        # print("dct after:")
-        # for k, v in dct.items():
-        # print(f"  {k} = {v}")
+        print(f"Creating new table class {name!r}:")
+        fields = demote_conditional(dct, "fields", is_field)
+        for k, v in fields.items():
+            print(f"   {k}: {v}")
+            if not isinstance(v, Generator):
+                dct["fields"][k] = to_generator(v)
 
         return super().__new__(cls, name, bases, dct)

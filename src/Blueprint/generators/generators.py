@@ -922,7 +922,6 @@ class GeneratorConstantFloat(GeneratorFloat, GeneratorConstant[float]):
 
 # endregion
 
-
 # region Types
 GeneratorCompositeAddNumeric = Union[
     GeneratorCompositeAddInt, GeneratorCompositeAddFloat
