@@ -99,8 +99,7 @@ def zipper(*args: Collection[T] | T, length: int | None = None) -> zt[T]:
 
     arg_lengths = [len(a) for a in args if is_collection(a)]
     if length is not None and any(a != length for a in arg_lengths):
-        raise ValueError(
-            "Parameter length must match the length of provided lists.")
+        raise ValueError("Parameter length must match the length of provided lists.")
 
     arg_lengths_set = set(arg_lengths)
     if len(arg_lengths_set) > 1:
