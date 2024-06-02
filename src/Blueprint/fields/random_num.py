@@ -11,9 +11,9 @@ from ..generators import GeneratorInt
 from ..generators import ReferenceFloat
 from ..generators import ReferenceInt
 from ..generators import zipper
-from .random_values import random_bool
-from .random_values import random_float
-from .random_values import random_int
+from .random_functions import random_bool
+from .random_functions import random_float
+from .random_functions import random_int
 from .resolve import resolve
 
 
